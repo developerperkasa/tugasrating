@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Kehadiran</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #6C63FF;
+        --secondary: #FF6584;
+        --bg1: #f9f9fb;
+        --bg2: #f3f1ff;
+        --card-bg: #ffffff;
+        --success: #4CAF50;
+        --danger: #E53935;
+        --pending: #FFA726;
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+    body {
+        background: linear-gradient(-45deg, var(--bg1), var(--bg2), #ffffff, var(--bg1));
+        background-size: 400% 400%;
+        animation: gradientMove 15s ease infinite;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-size: 2rem;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+    .link-rating {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 1rem;
+    }
+    .link-rating a {
+        background: var(--primary);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.3s ease;
+    }
+    .link-rating a:hover {
+        background: var(--secondary);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        animation: slideUp 0.8s ease-in-out;
+    }
+    thead {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+    }
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+    tbody tr {
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+    tbody tr:hover {
+        background: rgba(108, 99, 255, 0.08);
+        transform: scale(1.01);
+    }
+    th {
+        font-weight: 600;
+    }
+    .sudah {
+        color: var(--success);
+        font-weight: 600;
+    }
+    .belum {
+        color: var(--danger);
+        font-weight: 600;
+    }
+    .menunggu {
+        color: var(--pending);
+        font-weight: 600;
+    }
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(-15px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes slideUp {
+        from {opacity: 0; transform: translateY(20px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+</style>
+</head>
+<body>
+
+<h1>Rating Biznizo di Google</h1>
+<div class="link-rating">
+    <a href="https://g.co/kgs/uAxneri" target="_blank">Klik di sini</a>
+</div>
+
+<table id="tabelKehadiran">
+    <thead>
+        <tr>
+            <th>Nama</th>
+            <th>Hari & Tanggal</th>
+            <th>Keterangan</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data dari JavaScript -->
+    </tbody>
+</table>
+
+<script>
+    const database = [
+        { nama: "Ikbal", tanggal: "Kamis, 31 Juli 2025", status: 1 },
+        { nama: "Farrel", tanggal: "Kamis, 31 Juli 2025", status: 1 },
+        { nama: "Adit", tanggal: "Kamis, 14 Agustus 2025", status: 0 },
+        { nama: "Leo", tanggal: "Kamis, 14 Agustus 2025", status: 0 },
+        { nama: "Arvan", tanggal: "Senin, 18 Agustus 2025", status: 2 },
+        { nama: "Alif", tanggal: "Senin, 18 Agustus 2025", status: 2 },
+        { nama: "Via", tanggal: "Rabu, 20 Agustus 2025", status: 2 },
+        { nama: "Adisti", tanggal: "Rabu, 20 Agustus 2025", status: 2 },
+        { nama: "Alfin", tanggal: "Jum'at, 22 Agustus 2025", status: 2 }
+    ];
+
+    function parseTanggalIndo(tanggalStr) {
+        const bulanMap = {
+            "Januari": 1, "Februari": 2, "Maret": 3, "April": 4, "Mei": 5, "Juni": 6,
+            "Juli": 7, "Agustus": 8, "September": 9, "Oktober": 10, "November": 11, "Desember": 12
+        };
+        const parts = tanggalStr.replace(/^[^,]+,\s*/, "").split(" ");
+        const tgl = parseInt(parts[0]);
+        const bln = bulanMap[parts[1]];
+        const thn = parseInt(parts[2]);
+        return new Date(thn, bln - 1, tgl);
+    }
+
+    const today = new Date();
+    const todayWIB = new Date(today.getTime() - (today.getTimezoneOffset() * 60000));
+    todayWIB.setHours(0, 0, 0, 0);
+
+    const tbody = document.querySelector("#tabelKehadiran tbody");
+
+    database.forEach(data => {
+        const tgl = parseTanggalIndo(data.tanggal);
+        tgl.setHours(0, 0, 0, 0);
+
+        let keteranganClass = "";
+        let keteranganText = "";
+
+        if (data.status === 1) {
+            keteranganClass = "sudah";
+            keteranganText = "Sudah";
+        } else if (data.status === 0) {
+            if (tgl.getTime() > todayWIB.getTime()) {
+                keteranganClass = "menunggu";
+                keteranganText = "Menunggu Giliran";
+            } else {
+                keteranganClass = "belum";
+                keteranganText = "Belum";
+            }
+        } else {
+            keteranganClass = "menunggu";
+            keteranganText = "Menunggu Giliran";
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${data.nama}</td>
+            <td>${data.tanggal}</td>
+            <td class="${keteranganClass}">${keteranganText}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+</script>
+
+</body>
+</html>
